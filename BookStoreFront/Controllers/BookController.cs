@@ -31,5 +31,30 @@ namespace BookStoreFront.Controllers
             }
 
         }
+
+
+        // GET: BookController/Details/5
+        public async Task<ActionResult> Details(int id)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new System.Uri("https://localhost:7172/");
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = await httpClient.GetAsync("api/Book/" + id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read the content of the response and deserialize it into a list of books
+                    var content = await response.Content.ReadAsStringAsync();
+                    var book = JsonConvert.DeserializeObject<Book>(content);
+                    return View(book);
+                }
+                return View();
+            }
+
+        }
     }
+
+
 }
