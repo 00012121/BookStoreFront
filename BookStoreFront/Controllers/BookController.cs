@@ -107,5 +107,62 @@ namespace BookStoreFront.Controllers
             return View(book);
 
         }
+
+        // GET: BookController/Edit/5
+        public async Task<ActionResult> Edit(int id)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new System.Uri("https://localhost:7172/");
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = await httpClient.GetAsync("api/Book/" + id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read the content of the response and deserialize it into a list of employees
+                    var content = await response.Content.ReadAsStringAsync();
+                    var book = JsonConvert.DeserializeObject<Book>(content);
+                    return View(book);
+                }
+                return View();
+            }
+        }
+
+        // POST: BookController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(int id, Book book)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.BaseAddress = new Uri(BaseApi);
+                    httpClient.DefaultRequestHeaders.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var jsonContent = JsonConvert.SerializeObject(book);
+                    var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+
+                    var response = await httpClient.PutAsync($"api/Book/{id}", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+
+        }
     }
 }
