@@ -8,6 +8,6 @@ namespace BookStoreFront.Controllers
 {
     public class BookController : Controller
     {
-        
+        private const string BaseApi = "https://localhost:7172/";
     }
 }
