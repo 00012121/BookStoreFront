@@ -54,7 +54,58 @@ namespace BookStoreFront.Controllers
             }
 
         }
+
+        // GET: BookController/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: BookController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(Book book)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.BaseAddress = new Uri(BaseApi);
+                    httpClient.DefaultRequestHeaders.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    // Serialize the employee object to JSON
+                    var jsonContent = JsonConvert.SerializeObject(book);
+                    var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+
+                    // Send the POST request
+                    var response = await httpClient.PostAsync("api/book/", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Extract the response content (the newly created book)
+                        var responseData = await response.Content.ReadAsStringAsync();
+                        var createdBook = JsonConvert.DeserializeObject<Book>(responseData);
+
+                        // Redirect to the Index action or another suitable action
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        // Handle the error response here if needed
+                        ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and return the view with error message
+                ModelState.AddModelError(string.Empty, $"Exception: {ex.Message}");
+            }
+
+            // If we got this far, something failed, re-display form
+            return View(book);
+
+        }
     }
-
-
 }
