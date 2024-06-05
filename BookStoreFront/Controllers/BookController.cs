@@ -6,9 +6,11 @@ using System.Net.Http.Headers;
 
 namespace BookStoreFront.Controllers
 {
+    // I have used HttpClient for calling Back-end API for my MVC application
+
     public class BookController : Controller
     {
-        private const string BaseApi = "https://localhost:7172/";
+        private const string BaseApi = "http://ec2-54-162-5-168.compute-1.amazonaws.com/";
         
         // GET: BookController
         public async Task<ActionResult> Index()
@@ -30,6 +32,7 @@ namespace BookStoreFront.Controllers
                 return View();
             }
 
+
         }
 
 
@@ -38,7 +41,7 @@ namespace BookStoreFront.Controllers
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.BaseAddress = new System.Uri("https://localhost:7172/");
+                httpClient.BaseAddress = new System.Uri(BaseApi);
                 httpClient.DefaultRequestHeaders.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync("api/Book/" + id);
@@ -113,7 +116,7 @@ namespace BookStoreFront.Controllers
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.BaseAddress = new System.Uri("https://localhost:7172/");
+                httpClient.BaseAddress = new System.Uri(BaseApi);
                 httpClient.DefaultRequestHeaders.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync("api/Book/" + id);
